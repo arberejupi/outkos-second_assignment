@@ -9,11 +9,17 @@ class VerifyCsrfToken extends Middleware
     /**
      * The URIs that should be excluded from CSRF verification.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $except = [
-        'register',
+        'register', // Explicitly exclude specific routes
         'login',
-        'user/profile', // if you have POST requests for profile
+        'user-details',
+        'courses',
+        'courses/*', // Exclude routes with parameters like courses/{id}
+        'threads',
+        'threads/*',
+        'replies', 
+        'replies/*', 
     ];
 }
