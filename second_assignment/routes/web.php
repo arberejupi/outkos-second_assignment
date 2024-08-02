@@ -2,23 +2,46 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\TestController;
+use App\Http\Controllers\UserDetailController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\ThreadController;
+use App\Http\Controllers\ReplyController;
+use App\Http\Middleware\CheckRole;
 
-// Welcome Route
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/log-test', [TestController::class, 'logTest']);
 
+// Public routes
+Route::middleware('web')->group(function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+});
 
-// Register Route
-Route::post('register', [AuthController::class, 'register']);
+// User Details routes
+Route::get('user-details/create', [UserDetailController::class, 'create'])->name('user-details.create');
+Route::post('user-details', [UserDetailController::class, 'store'])->name('user-details.store');
 
-// Login Route
-Route::post('login', [AuthController::class, 'login']);
-
-// Protected Route with JWT Authentication
+// Protected routes with JWT authentication
 Route::middleware(['jwt.auth'])->group(function () {
+    // User profile route
     Route::get('user/profile', [AuthController::class, 'profile']);
+
+    // Course routes
+    Route::post('courses', [CourseController::class, 'store']);
+    Route::delete('courses/{id}', [CourseController::class, 'destroy']);
+
+    // Enrollment routes
+    Route::post('courses/{courseId}/enroll', [EnrollmentController::class, 'enroll']);
+    Route::post('courses/{courseId}/withdraw', [EnrollmentController::class, 'withdraw']);
+
+     // Thread routes
+     Route::post('threads', [ThreadController::class, 'store']);
+     Route::delete('threads/{id}', [ThreadController::class, 'destroy']);
+     Route::get('threads', [ThreadController::class, 'index']);
+ 
+     // Reply routes
+     Route::post('replies', [ReplyController::class, 'store']);
+     Route::delete('replies/{id}', [ReplyController::class, 'destroy']);
 });
